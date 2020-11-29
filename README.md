@@ -1,6 +1,8 @@
-# Network File System Server
+# Network File System Server With Kubernetes
 
-What is an NFS Server: https://en.wikipedia.org/wiki/Network_File_System
+![NFS-K8](nfs.png)
+
+[What is an NFS Server?](https://en.wikipedia.org/wiki/Network_File_System)
 
 ## NFS in K8
 There is an order of operations with running an NFS server in Kubernetes.
