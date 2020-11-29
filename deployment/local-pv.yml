@@ -1,0 +1,30 @@
+# this is a local PVC that will be replaced for cloud backed resource, like AWS EBS or other, in production
+# hostPath volumes are only for testing and development purposes
+
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: local-node-storage
+  labels:
+    type: local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: {{local.pv.mount}}
+
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: local-node-storage-claim
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi

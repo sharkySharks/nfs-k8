@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+if  [[ $1 != "-f" ]]; then
+  echo "####################################################################################################"
+  echo "Local Mounted Directory for mounted pv data deletion is /Users/althen/mounted-pv-data"
+  echo ""
+  echo "If this is the wrong directory do not continue running this script. Ctrl+C to exit."
+  echo "####################################################################################################"
+
+  read -rsp $'Press any key to continue...\n' -n1 key
+fi
+echo "Removing mounted pv data"
+rm -rf /Users/althen/mounted-pv-data/*
+echo "Completed removing mounted pv data"
+

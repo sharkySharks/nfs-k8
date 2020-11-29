@@ -1,0 +1,36 @@
+#!/bin/bash
+
+echo "Export directory: ${SHARED}"
+echo ""
+
+# grant permissions for all client ips *
+echo "$SHARED *(rw,sync,no_root_squash,no_subtree_check,fsid=0)" > /etc/exports
+
+# allows RPC calls on the server
+rpcbind -d -s
+
+# start nfs with 8 threads, only v4, 4.1, 4.2
+rpc.nfsd -d 8 -U -N 2 -N 3 -V 4 -V 4.1 -V 4.2
+
+# export all directories from /etc/exports to remote server
+exportfs -rav
+exportfs
+echo ""
+
+# restart nfs services after setup
+service nfs-kernel-server restart
+
+# debugging and verification
+echo "rpcbind status:"
+rpcinfo -p
+echo ""
+
+echo "What directories are exported from /etc/exports:"
+cat ${SHARED}
+echo ""
+
+echo -e "showmount -e \n`showmount -e`"
+echo ""
+
+# keeping the container alive since NFS runs in the background
+exec inotifywait -m ${SHARED}

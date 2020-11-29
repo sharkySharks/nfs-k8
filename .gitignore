@@ -1,0 +1,25 @@
+# secrets
+.env
+
+# Generated script files
+nfs/delete_packaging_data
+
+# temp files
+_tmp_*.*
+
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Editor Project Files
+.idea/
+
+# Mac file
+.DS_Store
+
+# logs
+*.log
+

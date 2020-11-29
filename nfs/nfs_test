@@ -1,0 +1,50 @@
+#!/bin/bash
+
+RESULT=1
+
+log () {
+echo -e "\n===========================================================================\n
+              $1
+\n===========================================================================\n"
+}
+
+setup () {
+    tearDown
+    docker build . -t nfs:latest -f nfs/Dockerfile
+    docker run -d -p 2049:2049/tcp --privileged -v /etc/shared --name nfs-server nfs:latest
+    docker ps
+    sleep 5
+}
+
+tearDown () {
+    docker stop nfs-server
+    docker rm nfs-server
+}
+
+runTest () {
+    NFS=$(docker exec -i nfs-server rpcinfo -p | grep nfs)
+
+    log "Test: Validating NFS is running"
+    if [[ ${NFS} == "" ]]; then
+        echo -e "Test failed.\n\nExpected NFS service to be running."
+        return
+    fi
+    RESULT=0
+    echo "Test passed. NFS service is running."
+
+}
+
+main () {
+    log "Setup: NFS docker build and run in background"
+    setup
+
+    log "Running tests..."
+    runTest
+
+    log "Tearing down..."
+    tearDown
+}
+
+main
+
+exit ${RESULT}

@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+
+# set_local_pv is a script that sets the local mounted dir for a mac or linux based host system
+# the default location are: /Users/${user_id}/mounted-pv-data (mac) and /home/${user_id}/mounted-pv-data (linux)
+
+OS=$(uname)
+
+if [[ ${OS} == "Darwin" ]]; then
+    BASE_DIR="/Users"
+else
+    BASE_DIR="/home"
+fi
+
+MOUNT_DIR="${BASE_DIR}/$(id -un)/mounted-pv-data"
+
+echo "####################################################################################################"
+echo "Local Mounted Directory is ${MOUNT_DIR}"
+echo ""
+echo "If you desire to mount a different folder in your home directory then adjust this script..."
+echo "nfs/set_local_pv"
+echo "####################################################################################################"
+
+sed "s|{{local.pv.mount}}|${MOUNT_DIR}|" deployment/local-pv.yml > deployment/_tmp_local-pv.yml
+
+# Get the relative script directory and create a data removal file
+DIR="$( dirname "${BASH_SOURCE[0]}" )"
+
+cat > ${DIR}/delete_mounted_pv_data << EOL
+#!/usr/bin/env bash
+if  [[ \$1 != "-f" ]]; then
+  echo "####################################################################################################"
+  echo "Local Mounted Directory for mounted pv data deletion is ${MOUNT_DIR}"
+  echo ""
+  echo "If this is the wrong directory do not continue running this script. Ctrl+C to exit."
+  echo "####################################################################################################"
+
+  read -rsp $'Press any key to continue...\n' -n1 key
+fi
+echo "Removing mounted pv data"
+rm -rf ${MOUNT_DIR}/*
+echo "Completed removing mounted pv data"
+
+EOL
+
+chmod +x "${DIR}/delete_mounted_pv_data"
